@@ -1,0 +1,9 @@
+Gaussian Mixture VAE (GM-VAE) — Portfolio Description
+
+- Implemented a GM-VAE where the **prior is a learnable Gaussian Mixture** (learnable cluster means/variances and mixture weights), rather than a fixed standard Gaussian — allowing the latent space to organize into distinct, meaningful clusters.
+- Used **KL annealing** (gradually increasing the KL weight during training) to prevent posterior/KL collapse — stopping the KL term from dominating and crushing the encoder's variance before the reconstruction (likelihood) term has a chance to shape useful latents.
+- The **cluster component distributions are fixed as Gaussian** (isotropic/diagonal covariance), while their parameters (mean, variance per cluster) and mixture weights are learned.
+- Introduced the discrete **auxiliary latent variable $c$** (cluster assignment) alongside the continuous latent $z$, so the generative model is $p(x,z,c) = p(c)p(z\mid c)p(x\mid z)$ — this hierarchical structure is what allows soft/overlapping cluster boundaries (via the marginal $p(z)=\sum_c p(c)p(z\mid c)$) rather than hard partitions, keeping $p(x,z)$ continuous and differentiable across cluster boundaries.
+- Demonstrated **cluster overlap** in the latent space, and validated clustering quality quantitatively — evaluated via t-SNE visualization, cluster purity, NMI, ARI, and ROC/AUC (with Hungarian algorithm for cluster-to-label alignment), plus Bhattacharyya coefficient to measure inter-cluster overlap directly.
+- Debugged and resolved **cluster collapse** (all data mapping to one cluster) — a common GM-VAE failure mode — via the annealing schedule.
+- Applications: **generation** (sample a cluster $c$, then $z\mid c$, then decode — produces class-conditional-like samples without labels), and **anomaly detection** (low likelihood under all learned cluster components signals out-of-distribution/anomalous input).
